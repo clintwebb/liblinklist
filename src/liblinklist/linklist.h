@@ -42,6 +42,4 @@ void * ll_pop_head(list_t *list);
 void * ll_pop_tail(list_t *list);
 
 
-
-
 #endif
