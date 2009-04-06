@@ -76,7 +76,7 @@ static _list_node_t * ll_new_node(list_t *list)
 	return(node);
 }
 
-void ll_return_node(list_t *list, _list_node_t *node)
+static void ll_return_node(list_t *list, _list_node_t *node)
 {
 	assert(list);
 	assert(node);
