@@ -241,5 +241,34 @@ void * ll_pop_tail(list_t *list)
 }
 
 
+//-----------------------------------------------------------------------------
+// Start the iterations through the list.  If there are no entries in the list,
+// will return NULL.
+void * ll_start(list_t *list)
+{
+	void *next;
+	assert(list);
+	return(next);
+}
+
+//-----------------------------------------------------------------------------
+// return the data pointer for the next node.
+void * ll_next(list_t *list, void **next)
+{
+	void *ptr;
+	
+	assert(list);
+	assert(next);
+
+	if (*next == NULL) {
+		return(NULL);
+	}
+	else {
+		ptr = ((_list_node_t *)*next)->data;
+		assert(ptr);
+		*next = ((_list_node_t *)*next)->next;
+		return(ptr);
+	}
+}
 
 
