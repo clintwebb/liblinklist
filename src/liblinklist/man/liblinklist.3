@@ -1,0 +1,104 @@
+.\" man page for liblinklist
+.\" Contact dev@hyper-active.com.au to correct errors or omissions. 
+.TH liblinklist 3 "5 April 2009" "0.1" "Simple library to manage a free-standing linked list of generic objects."
+.SH NAME
+liblinklist \- Simple library to manage a free-standing linked list of generic objects.
+.SH SYNOPSIS
+.\" Syntax goes here. 
+.B #include <linklist.h>
+.sp
+.B void ll_init(list_t *list);
+.br
+.B void ll_free(list_t *list);
+.sp
+.B void ll_push_head(list_t *list, void *data);
+.br
+.B void ll_push_tail(list_t *list, void *data);
+.sp
+.B void * ll_get_head(list_t *list);
+.br
+.B void * ll_get_tail(list_t *list);
+.sp
+.B void * ll_pop_head(list_t *list);
+.br
+.B void * ll_pop_tail(list_t *list);
+.sp
+compile with the 
+.B -llinklist
+option
+.SH EXAMPLES
+#include <linklist.h>
+.sp
+int main(void) {
+.br
+	list_t list;
+.br
+	somestruct_t *object;
+.sp
+	ll_init(&list);
+.sp
+	// Get an object (pointer) from somewhere else (simplified for example)
+.br
+	// and push it to the top of the list.
+.br
+	object = get_some_object();
+.br
+	while (object) {
+.br
+		ll_push_head(&list, object);
+.br
+		object = get_some_object();
+.br
+	}
+.sp
+	// Get all the objects from the list and do something with it.
+.br
+	// by pushing to the head and popping from the head, we are using the list like a stack.
+.br
+	// if we push to head, and pop from tail, then it becomes a fifo list.
+.br
+	object = ll_pop_head(&list);
+.br
+	while (object) {
+.br
+		do_something_with_object(object);
+.br
+		object = ll_pop_head(&list);
+.br
+	}
+.sp
+	ll_free(&list);
+.br
+	return(0);
+.br
+}
+.SH DESCRIPTION
+.B liblinklist
+is a simple library for handling a linked list of objects.  The objects themselves do not need to have anything in them to assist with the linked list.  Therefore, it is easy to assign an object in multiple linked lists, assuming that you keep it somewhat in sync so that you dont free (de-allocate) the object before it has been removed from all the lists.
+.br
+
+.SH FILES
+.P 
+.I /usr/lib/liblinklist.so
+.br
+.I /usr/include/linklist.h
+.SH SEE ALSO
+.BR ll_init (3),
+.BR ll_free (3),
+.BR ll_push_head (3),
+.BR ll_push_tail (3),
+.BR ll_pop_head (3),
+.BR ll_pop_tail (3),
+.BR ll_get_head (3),
+.BR ll_get_tail (3)
+.SH BUGS
+No known bugs at this time. 
+.SH AUTHOR
+.nf
+Clint Webb (webb.clint@gmail.com)
+on behalf of Hyper-Active Systems, Australia.
+.br
+http://www.hyper-active.com.au/liblinklist/
+.fi
+.SH HISTORY
+Apr 05, 2009 \- v0.1 - Pre-release.  
