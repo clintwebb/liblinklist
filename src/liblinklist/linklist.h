@@ -29,17 +29,22 @@ typedef struct {
 	int items;
 } list_t;
 
+// initializing and de-initializing of the list.
 void ll_init(list_t *list);
 void ll_free(list_t *list);
 
+// adding data to the list.
 void ll_push_head(list_t *list, void *data);
 void ll_push_tail(list_t *list, void *data);
 
+// getting and removing data from the list.
+void * ll_pop_head(list_t *list);
+void * ll_pop_tail(list_t *list);
+
+// getting data from the list without removing.
 void * ll_get_head(list_t *list);
 void * ll_get_tail(list_t *list);
 
-void * ll_pop_head(list_t *list);
-void * ll_pop_tail(list_t *list);
 
 
 #endif
