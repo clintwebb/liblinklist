@@ -246,9 +246,8 @@ void * ll_pop_tail(list_t *list)
 // will return NULL.
 void * ll_start(list_t *list)
 {
-	void *next;
 	assert(list);
-	return(next);
+	return(list->head);
 }
 
 //-----------------------------------------------------------------------------
