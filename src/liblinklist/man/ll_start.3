@@ -1,12 +1,12 @@
 .\" man page for liblinklist
 .\" Contact dev@hyper-active.com.au to correct errors or omissions. 
-.TH ll_free 3 "5 April 2008" "0.3" "Simple library to manage a free-standing linked list of generic objects."
+.TH ll_start 3 "7 April 2008" "0.3" "Simple library to manage a free-standing linked list of generic objects."
 .SH NAME
-ll_free \- Free the resources created to manage the list.
+ll_start \- Return a pointer that can be used by ll_next to iterate through the nodes in the list.
 .SH SYNOPSIS
 .B #include <linklist.h>
 .sp
-.B void ll_free(linklist_t *list);
+.B void * ll_start(linklist_t *list);
 .br
 .SH EXAMPLES
 #include <linklist.h>
@@ -14,13 +14,27 @@ ll_free \- Free the resources created to manage the list.
 int main(void) {
 .br
 	list_t *list;
+.br
+	void *next, *data;
 .sp
 	list = (list_t *) malloc(sizeof(list_t));
 .br
 	ll_init(list);
+.sp
+	/* populate the list with nodes. */
+.sp
+	next = ll_start(list);
 .br
-	/* do something with the list. */
+	data = ll_next(list, &next);
 .br
+	while (data) {
+.br
+		/* do stuff with 'data'
+.br
+		data = ll_next(list, &next);
+.br
+	}
+.sp
 	ll_free(list);
 .br
 	free(list);
@@ -29,18 +43,13 @@ int main(void) {
 .br
 }
 .SH DESCRIPTION
-.B ll_free()
-is used when the list is no longer needed (and presumably empty), it's internal allocations need to be freed, so ll_free() should be called, before freeing the memory created for the list_t structure.
+.B ll_start()
+is used to initialise an iteration.  It will return a pointer that can be used by
+.B ll_next().
+.sp
+
 .SH SEE ALSO
 .BR liblinklist (3),
-.BR ll_init (3),
-.BR ll_free (3),
-.BR ll_push_head (3),
-.BR ll_push_tail (3),
-.BR ll_pop_head (3),
-.BR ll_pop_tail (3),
-.BR ll_get_head (3),
-.BR ll_get_tail (3),
 .BR ll_start (3),
 .BR ll_next (3),
 .BR ll_remove (3)

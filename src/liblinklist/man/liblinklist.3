@@ -1,6 +1,6 @@
 .\" man page for liblinklist
 .\" Contact dev@hyper-active.com.au to correct errors or omissions. 
-.TH liblinklist 3 "5 April 2009" "0.1" "Simple library to manage a free-standing linked list of generic objects."
+.TH liblinklist 3 "7 April 2009" "0.3" "Simple library to manage a free-standing linked list of generic objects."
 .SH NAME
 liblinklist \- Simple library to manage a free-standing linked list of generic objects.
 .SH SYNOPSIS
@@ -22,6 +22,10 @@ liblinklist \- Simple library to manage a free-standing linked list of generic o
 .B void * ll_pop_head(list_t *list);
 .br
 .B void * ll_pop_tail(list_t *list);
+.br
+.B void * ll_start(list_t *list);
+.br
+.B void * ll_next(list_t *list, void **next);
 .sp
 compile with the 
 .B -llinklist
@@ -90,7 +94,10 @@ is a simple library for handling a linked list of objects.  The objects themselv
 .BR ll_pop_head (3),
 .BR ll_pop_tail (3),
 .BR ll_get_head (3),
-.BR ll_get_tail (3)
+.BR ll_get_tail (3),
+.BR ll_start (3),
+.BR ll_next (3),
+.BR ll_remove (3)
 .SH BUGS
 No known bugs at this time. 
 .SH AUTHOR
@@ -102,3 +109,5 @@ http://www.hyper-active.com.au/liblinklist/
 .fi
 .SH HISTORY
 Apr 05, 2009 \- v0.1 - Pre-release.  
+Apr 06, 2009 \- v0.2 - Minor tweaks and documentations.
+Apr 07, 2009 \- v0.3 - Added ll_start and ll_next for list iteration, and ll_remove for deleting entries that are somewhere in the list.

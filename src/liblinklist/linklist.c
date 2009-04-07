@@ -143,6 +143,29 @@ void ll_push_tail(list_t *list, void *data)
 	list->items ++;
 }
 
+
+//-----------------------------------------------------------------------------
+// delete a particular node from the list.
+static void ll_delete_node(list_t *list, _list_node_t *node)
+{
+	assert(list);
+	assert(node);
+	assert(list->head);
+	assert(list->tail);
+
+	if (node->prev) node->prev->next = node->next;
+	if (node->next) node->next->prev = node->prev;
+	if (list->head == node) list->head = node->next;
+	if (list->tail == node) list->tail = node->prev;
+	node->prev = NULL;
+	node->next = NULL;
+	node->data = NULL;
+	ll_return_node(list, node);
+}
+
+
+
+
 //-----------------------------------------------------------------------------
 // return a pointer to the data object in the first entry in the list.  Does
 // not remove the entry from the list.  This is useful for examining an item
@@ -192,15 +215,7 @@ void * ll_pop_head(list_t *list)
 		assert(list->head->data);
 		data = list->head->data;
 
-		node = list->head;
-		if (node->next) node->next->prev = NULL;
-		list->head = node->next;
-		if (list->head == NULL) list->tail = NULL;
-
-		node->data = NULL;
-		node->prev = NULL;
-		node->next = NULL;
-		ll_return_node(list, node);
+		ll_delete_node(list, list->head);
 
 		list->items --;
 		assert(list->items >= 0);
@@ -214,7 +229,6 @@ void * ll_pop_head(list_t *list)
 void * ll_pop_tail(list_t *list)
 {
 	void *data;
-	_list_node_t *node;
 	
 	assert(list);
 
@@ -223,16 +237,7 @@ void * ll_pop_tail(list_t *list)
 		assert(list->tail->data);
 		data = list->tail->data;
 
-		node = list->tail;
-		if (node->prev) node->prev->next = NULL;
-		list->tail = node->prev;
-		if (list->tail == NULL) list->head = NULL;
-
-		node->data = NULL;
-		node->prev = NULL;
-		node->next = NULL;
-		ll_return_node(list, node);
-
+		ll_delete_node(list, list->tail);
 		list->items --;
 		assert(list->items >= 0);
 	}
@@ -270,4 +275,53 @@ void * ll_next(list_t *list, void **next)
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Remove a particular pointer from the list.  The 'next' is used to give a
+// hint to where in the list the item is (normally provided as part of
+// ll_start/ll_next).  If next is NULL, then the tail of the list is checked
+// first.
+void ll_remove(list_t *list, void *ptr, void *next)
+{
+	int found;
+	_list_node_t *node;
+
+	assert(list);
+	assert(ptr);
+
+	assert(list->head);
+	assert(list->tail);
+
+	// first check the 'next' hint that we were given.   It should be either
+	// pointing to the one we want, or pointing to the next one in the list from
+	// it.
+	found = 0;
+	if (next) {
+		node = next;
+		if (node->data == ptr) {
+			ll_delete_node(list, node);
+			found ++;
+		}
+		else if (node->prev) {
+			if (node->prev->data == ptr) {
+				ll_delete_node(list, node->prev);
+				found ++;
+			}
+		}
+	}
+
+	if (found == 0) {
+		node = list->tail;
+		while (node) {
+			if (node->data == ptr) {
+				ll_delete_node(list, node);
+				found++;
+			}
+			else {
+				node = node->prev;
+			}
+		}
+	}
+
+	assert(found > 0);
+}
 

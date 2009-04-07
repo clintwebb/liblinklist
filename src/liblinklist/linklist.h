@@ -48,6 +48,6 @@ void * ll_get_tail(list_t *list);
 // Methods to iterate throught the list.
 void * ll_start(list_t *list);
 void * ll_next(list_t *list, void **next);
-
+void ll_remove(list_t *list, void *ptr, void *next);
 
 #endif
