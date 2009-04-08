@@ -54,11 +54,16 @@ int main(void) {
 	return(0);
 .br
 }
-.SH DESCRIPTION
-.B ll_remove()
-is used to remove a node from the list, when given the data pointer.  Most often would be used inside a ll_next iteration, however, it should be noted that when the node is removed, the 'next' pointer could become invalid and the iteration should stop.  However, it may be safe to continue processing the iteration, but future versions may not function the same.
+.SH DESCRIPTION 
+.B ll_remove() 
+is used to remove a node from the list, when given the data pointer.
 .sp
-
+The 'next' pointer is a hint that will help the system try to remove the link using less
+iterations.  Most often would be used inside a ll_next iteration, however, it should be 
+noted that when the node is removed, the 'next' pointer could become invalid and the 
+iteration should stop.  However, it may be safe to continue processing the iteration, 
+but future versions may not function the same. 
+.sp
 .SH SEE ALSO
 .BR liblinklist (3),
 .BR ll_start (3),
