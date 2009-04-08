@@ -1,6 +1,6 @@
 .\" man page for liblinklist
 .\" Contact dev@hyper-active.com.au to correct errors or omissions. 
-.TH ll_init 3 "5 April 2008" "0.1" "Simple library to manage a free-standing linked list of generic objects."
+.TH ll_init 3 "7 April 2008" "0.3" "Simple library to manage a free-standing linked list of generic objects."
 .SH NAME
 ll_init \- Initialise the the list structure.
 .SH SYNOPSIS
@@ -37,14 +37,6 @@ When the list is no longer needed (and presumably empty), it's internal allocati
 .BR liblinklist (3),
 .BR ll_init (3),
 .BR ll_free (3),
-.BR ll_push_head (3),
-.BR ll_push_tail (3),
-.BR ll_pop_head (3),
-.BR ll_pop_tail (3),
-.BR ll_get_head (3),
-.BR ll_get_tail (3),
-.BR ll_start (3),
-.BR ll_next (3)
 .SH BUGS
 No known bugs at this time. 
 .SH AUTHOR
@@ -56,3 +48,5 @@ http://www.hyper-active.com.au/liblinklist/
 .fi
 .SH HISTORY
 Apr 05, 2009 \- v0.1 - Pre-release.  
+Apr 06, 2009 \- v0.2 - Minor tweaks and documentations.
+Apr 07, 2009 \- v0.3 - Added ll_start and ll_next for list iteration, and ll_remove for deleting entries that are somewhere in the list.
