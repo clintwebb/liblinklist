@@ -22,10 +22,12 @@ liblinklist \- Simple library to manage a free-standing linked list of generic o
 .B void * ll_pop_head(list_t *list);
 .br
 .B void * ll_pop_tail(list_t *list);
-.br
+.sp
 .B void * ll_start(list_t *list);
 .br
 .B void * ll_next(list_t *list, void **next);
+.br
+.B void ll_remove(list_t *list, void *ptr);
 .sp
 compile with the 
 .B -llinklist
@@ -111,3 +113,4 @@ http://www.hyper-active.com.au/liblinklist/
 Apr 05, 2009 \- v0.1 - Pre-release.  
 Apr 06, 2009 \- v0.2 - Minor tweaks and documentations.
 Apr 07, 2009 \- v0.3 - Added ll_start and ll_next for list iteration, and ll_remove for deleting entries that are somewhere in the list.
+Apr 08, 2009 \- v0.3.1 - Fixed layout of man/liblinklist
