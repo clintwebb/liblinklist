@@ -50,4 +50,7 @@ void * ll_start(list_t *list);
 void * ll_next(list_t *list, void **next);
 void ll_remove(list_t *list, void *ptr, void *next);
 
+// statistics of the linked list.
+int ll_count(list_t *list);
+
 #endif

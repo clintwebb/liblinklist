@@ -315,6 +315,10 @@ void ll_remove(list_t *list, void *ptr, void *next)
 			if (node->data == ptr) {
 				ll_delete_node(list, node);
 				found++;
+				node = NULL;
+
+				assert(list->items > 0);
+				list->items --;
 			}
 			else {
 				node = node->prev;
@@ -325,3 +329,13 @@ void ll_remove(list_t *list, void *ptr, void *next)
 	assert(found > 0);
 }
 
+
+//-----------------------------------------------------------------------------
+// Return the number of items in the list.
+int ll_count(list_t *list)
+{
+	assert(list);
+	assert(list->items >= 0);
+
+	return(list->items);
+}
