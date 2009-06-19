@@ -6,7 +6,7 @@ ll_remove \- Given the data pointer, will remove the node from the linked list t
 .SH SYNOPSIS
 .B #include <linklist.h>
 .sp
-.B void ll_remove(linklist_t *list, void *ptr);
+.B void ll_remove(linklist_t *list, void *ptr, void *next);
 .br
 .SH EXAMPLES
 #include <linklist.h>
@@ -33,7 +33,7 @@ int main(void) {
 .br
 		if (compare_data(data) > 0) {
 .br
-			ll_remove(list, data);
+			ll_remove(list, data, next);
 .br
 			data = NULL;	
 .br
