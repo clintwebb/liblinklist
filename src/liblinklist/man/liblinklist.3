@@ -1,6 +1,6 @@
 .\" man page for liblinklist
 .\" Contact dev@hyper-active.com.au to correct errors or omissions. 
-.TH liblinklist 3 "7 April 2009" "0.4" "Simple library to manage a free-standing linked list of generic objects."
+.TH liblinklist 3 "23 June 2009" "0.6" "Simple library to manage a free-standing linked list of generic objects."
 .SH NAME
 liblinklist \- Simple library to manage a free-standing linked list of generic objects.
 .SH SYNOPSIS
@@ -30,6 +30,8 @@ liblinklist \- Simple library to manage a free-standing linked list of generic o
 .B void ll_remove(list_t *list, void *ptr, void *next);
 .br
 .B int ll_count(list_t *list);
+.br
+.B char * ll_join_str(list_t *list, const char *sep);
 .sp
 compile with the 
 .B -llinklist
@@ -102,7 +104,8 @@ is a simple library for handling a linked list of objects.  The objects themselv
 .BR ll_start (3),
 .BR ll_next (3),
 .BR ll_remove (3),
-.BR ll_count (3)
+.BR ll_count (3),
+.BR ll_join_str (3)
 .SH BUGS
 No known bugs at this time. 
 .SH AUTHOR
@@ -124,3 +127,5 @@ Apr 08, 2009 \- v0.3.1 - Fixed layout of man/liblinklist
 Apr 08, 2009 \- v0.3.2 - Fixed more manpage layouts.
 .br
 Apr 08, 2009 \- v0.4 - added ll_count() to return the number of items in the list.
+.br
+Jun 23, 2009 \- v0.6 - added ll_join_str() function.

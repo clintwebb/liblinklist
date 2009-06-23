@@ -19,6 +19,10 @@
 #include <unistd.h>
 
 
+#if (LIBLINKLIST_VERSION != 0x00006000)
+	#error "This version certified for v0.6 only"
+#endif
+
 //-----------------------------------------------------------------------------
 // Initialise the list structure.  
 void ll_init(list_t *list)
@@ -29,6 +33,7 @@ void ll_init(list_t *list)
 	list->tail = NULL;
 	list->pool = NULL;
 	list->items = 0;
+	list->join = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -52,6 +57,11 @@ void ll_free(list_t *list)
 		free(tmp);
 	}
 	list->pool = NULL;
+
+	if (list->join) {
+		free(list->join);
+		list->join = NULL;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -338,4 +348,56 @@ int ll_count(list_t *list)
 	assert(list->items >= 0);
 
 	return(list->items);
+}
+
+
+//-----------------------------------------------------------------------------
+// Assuming that the list contains valid strings, this function will join all
+// the elements in the list into a single string
+char * ll_join_str(list_t *list, const char *sep)
+{
+	int max;
+	int count;
+	void *next;
+	char *str;
+	
+	assert(list);
+
+	// first go thru the list, and calculate the size of the resulting string.
+	max = 0;
+	count = 0;
+	next = ll_start(list);
+	while ((str = ll_next(list, &next))) {
+		count ++;
+		max += strlen(str);
+	}
+
+	if (sep && count > 1) {
+		max += (strlen(sep) * (count-1));
+	}
+
+	// max now contains the size of the string we will be building.
+	list->join = (char *) realloc(list->join, max+1);
+	assert(list->join);
+	
+	// now build the list.
+	count = 0;
+	list->join[0] = '\0';
+	next = ll_start(list);
+	while ((str = ll_next(list, &next))) {
+
+		// TODO: strcat is not very optimal way to do this.  We should keep track
+		// of the end of the string and add it direct to the end, but will bother
+		// with that another day.
+
+		if (count > 0 && sep != NULL) {
+			strcat(list->join, sep);
+		}
+		strcat(list->join, str);
+
+		count++;
+	}
+
+	assert(list->join);
+	return(list->join);
 }
