@@ -17,8 +17,8 @@
 #define __LINKLIST_H
 
 
-#define LIBLINKLIST_VERSION 0x00006000
-#define LIBLINKLIST_VERSION_TEXT "v0.6
+#define LIBLINKLIST_VERSION 0x00007000
+#define LIBLINKLIST_VERSION_TEXT "v0.70"
 
 
 typedef struct __llist {
@@ -32,6 +32,7 @@ typedef struct {
 	_list_node_t *pool;
 	int items;
 	char *join;
+	_list_node_t *loop;
 } list_t;
 
 // initializing and de-initializing of the list.
@@ -51,9 +52,10 @@ void * ll_get_head(list_t *list);
 void * ll_get_tail(list_t *list);
 
 // Methods to iterate throught the list.
-void * ll_start(list_t *list);
-void * ll_next(list_t *list, void **next);
-void ll_remove(list_t *list, void *ptr, void *next);
+void ll_start(list_t *list);
+void * ll_next(list_t *list);
+void ll_remove(list_t *list, void *ptr);
+void ll_finish(list_t *list);
 
 // statistics of the linked list.
 int ll_count(list_t *list);

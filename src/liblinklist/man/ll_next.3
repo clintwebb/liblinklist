@@ -1,12 +1,12 @@
 .\" man page for liblinklist
 .\" Contact dev@hyper-active.com.au to correct errors or omissions. 
-.TH ll_next 3 "7 April 2008" "0.3" "Simple library to manage a free-standing linked list of generic objects."
+.TH ll_next 3 "16 July 2009" "0.7" "Simple library to manage a free-standing linked list of generic objects."
 .SH NAME
 ll_next \- Return a data pointer of the next node in the list.
 .SH SYNOPSIS
 .B #include <linklist.h>
 .sp
-.B void * ll_next(linklist_t *list, void *next);
+.B void * ll_next(linklist_t *list);
 .br
 .SH EXAMPLES
 #include <linklist.h>
@@ -15,7 +15,7 @@ int main(void) {
 .br
 	list_t *list;
 .br
-	void *next, *data;
+	void *data;
 .sp
 	list = (list_t *) malloc(sizeof(list_t));
 .br
@@ -23,17 +23,15 @@ int main(void) {
 .sp
 	/* populate the list with nodes. */
 .sp
-	next = ll_start(list);
+	ll_start(list);
 .br
-	data = ll_next(list, &next);
-.br
-	while (data) {
+	while ((data = ll_next(list))) {
 .br
 		/* do stuff with 'data' */
 .br
-		data = ll_next(list, &next);
-.br
 	}
+.br
+	ll_finish(list);
 .sp
 	ll_free(list);
 .br
@@ -44,13 +42,16 @@ int main(void) {
 }
 .SH DESCRIPTION
 .B ll_next()
-is used to iterate through the linked list. It will return a pointer that is the data pointer stored in the node.  It updates the next pointer ready for the next iteration.  This function would generally be used until it returns a NULL.  The 'next' pointer is not really useful other than to feed it back into the next ll_next() call.
+is used to iterate through the linked list. It will return a pointer that is the data pointer stored in the node.  Internally it updates the next pointer ready for the next iteration.  This function would generally be used until it returns a NULL.
+.sp
+The looping functions cannot be used recursively.  In otherwords, you cannot iterate through the list, and while doing so, iterate through the list.
 .sp
 
 .SH SEE ALSO
 .BR liblinklist (3),
 .BR ll_start (3),
 .BR ll_next (3),
+.BR ll_finish (3),
 .BR ll_remove (3)
 .SH BUGS
 No known bugs at this time. 
@@ -72,3 +73,4 @@ Apr 08, 2009 \- v0.3.1 - Fixed layout of man/liblinklist
 .br
 Apr 08, 2009 \- v0.3.2 - Fixed more manpage layouts.
 .br
+Jul 16, 2009 \- v0.70 - Changed the iterator functions to use an internal 'next' pointer.

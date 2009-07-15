@@ -1,9 +1,9 @@
 ## make file for liblinklist
 
 MAINFILE=liblinklist.so
-LIBVER=1.0.1
+LIBVER=1.0.2
 LIBFILE=$(MAINFILE).$(LIBVER)
-SONAME=$(MAINFILE).1
+SONAME=$(MAINFILE).2
 
 MANPATH=/usr/local/man
 
@@ -49,7 +49,6 @@ manpages: man/liblinklist.3 man/ll_free.3 man/ll_get_head.3 man/ll_get_tail.3 ma
 
 
 clean:
-	@-[ -e liblinklist.o ] && rm liblinklist.o
-	@-[ -e liblinklist.so* ] && rm liblinklist.so*
-	@-test -e lib-test && rm lib-test
+	@-rm liblinklist.o
+	@-rm liblinklist.so*
 

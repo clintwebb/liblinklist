@@ -6,7 +6,7 @@ ll_remove \- Given the data pointer, will remove the node from the linked list t
 .SH SYNOPSIS
 .B #include <linklist.h>
 .sp
-.B void ll_remove(linklist_t *list, void *ptr, void *next);
+.B void ll_remove(linklist_t *list, void *ptr);
 .br
 .SH EXAMPLES
 #include <linklist.h>
@@ -15,7 +15,7 @@ int main(void) {
 .br
 	list_t *list;
 .br
-	void *next, *data;
+	void *data;
 .sp
 	list = (list_t *) malloc(sizeof(list_t));
 .br
@@ -23,29 +23,21 @@ int main(void) {
 .sp
 	/* populate the list with nodes. */
 .sp
-	next = ll_start(list);
+	ll_start(list);
 .br
-	data = ll_next(list, &next);
-.br
-	while (data) {
+	while ((data = ll_next(list);)) {
 .br
 		/* compare data with something... if it matches.. we would process, then remove the entry. */
 .br
 		if (compare_data(data) > 0) {
 .br
-			ll_remove(list, data, next);
-.br
-			data = NULL;	
-.br
-		}
-.br
-		else {
-.br
-			data = ll_next(list, &next);
+			ll_remove(list, data);
 .br
 		}
 .br
 	}
+.br
+	ll_finish(list);
 .sp
 	ll_free(list);
 .br
@@ -58,17 +50,12 @@ int main(void) {
 .B ll_remove() 
 is used to remove a node from the list, when given the data pointer.
 .sp
-The 'next' pointer is a hint that will help the system try to remove the link using less
-iterations.  Most often would be used inside a ll_next iteration, however, it should be 
-noted that when the node is removed, the 'next' pointer could become invalid and the 
-iteration should stop.  However, it may be safe to continue processing the iteration, 
-but future versions may not function the same. 
+It is safe to delete a node from the list while iterating through it, because an internal pointer to the 'next' entry is kept, and updated when a node is removed.
 .sp
 .SH SEE ALSO
 .BR liblinklist (3),
 .BR ll_start (3),
-.BR ll_next (3),
-.BR ll_remove (3)
+.BR ll_next (3)
 .SH BUGS
 No known bugs at this time. 
 .SH AUTHOR
@@ -89,3 +76,4 @@ Apr 08, 2009 \- v0.3.1 - Fixed layout of man/liblinklist
 .br
 Apr 08, 2009 \- v0.3.2 - Fixed more manpage layouts.
 .br
+Jul 15, 2009 \- v0.70 - Removed the 'next' parameter because it is now being handled internally.

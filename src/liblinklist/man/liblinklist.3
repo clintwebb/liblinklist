@@ -1,6 +1,6 @@
 .\" man page for liblinklist
 .\" Contact dev@hyper-active.com.au to correct errors or omissions. 
-.TH liblinklist 3 "23 June 2009" "0.6" "Simple library to manage a free-standing linked list of generic objects."
+.TH liblinklist 3 "16 July 2009" "0.7" "Simple library to manage a free-standing linked list of generic objects."
 .SH NAME
 liblinklist \- Simple library to manage a free-standing linked list of generic objects.
 .SH SYNOPSIS
@@ -23,9 +23,11 @@ liblinklist \- Simple library to manage a free-standing linked list of generic o
 .br
 .B void * ll_pop_tail(list_t *list);
 .sp
-.B void * ll_start(list_t *list);
+.B void ll_start(list_t *list);
 .br
-.B void * ll_next(list_t *list, void **next);
+.B void * ll_next(list_t *list);
+.br
+.B void ll_finish(list_t *list);
 .br
 .B void ll_remove(list_t *list, void *ptr, void *next);
 .br
@@ -103,6 +105,7 @@ is a simple library for handling a linked list of objects.  The objects themselv
 .BR ll_get_tail (3),
 .BR ll_start (3),
 .BR ll_next (3),
+.BR ll_finish (3),
 .BR ll_remove (3),
 .BR ll_count (3),
 .BR ll_join_str (3)
@@ -129,3 +132,5 @@ Apr 08, 2009 \- v0.3.2 - Fixed more manpage layouts.
 Apr 08, 2009 \- v0.4 - added ll_count() to return the number of items in the list.
 .br
 Jun 23, 2009 \- v0.6 - added ll_join_str() function.
+.br
+Jul 16, 2009 \- v0.7 - Reworked the iteration functions (ll_start, ll_next and ll_finish) to use an internal 'next' hint.

@@ -19,8 +19,8 @@
 #include <unistd.h>
 
 
-#if (LIBLINKLIST_VERSION != 0x00006000)
-	#error "This version certified for v0.6 only"
+#if (LIBLINKLIST_VERSION != 0x00007000)
+	#error "This version certified for v0.70 only"
 #endif
 
 //-----------------------------------------------------------------------------
@@ -34,6 +34,7 @@ void ll_init(list_t *list)
 	list->pool = NULL;
 	list->items = 0;
 	list->join = NULL;
+	list->loop = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -48,6 +49,7 @@ void ll_free(list_t *list)
 
 	assert(list->head == NULL);
 	assert(list->tail == NULL);
+	assert(list->loop == NULL);
 
 	node = list->pool;
 	while (node) {
@@ -163,6 +165,10 @@ static void ll_delete_node(list_t *list, _list_node_t *node)
 	assert(list->head);
 	assert(list->tail);
 
+	if (list->loop == node) {
+		list->loop = node->next;
+	}
+
 	if (node->prev) node->prev->next = node->next;
 	if (node->next) node->next->prev = node->prev;
 	if (list->head == node) list->head = node->next;
@@ -259,30 +265,41 @@ void * ll_pop_tail(list_t *list)
 //-----------------------------------------------------------------------------
 // Start the iterations through the list.  If there are no entries in the list,
 // will return NULL.
-void * ll_start(list_t *list)
+void ll_start(list_t *list)
 {
 	assert(list);
-	return(list->head);
+	assert(list->loop == NULL);
+	list->loop = list->head;
 }
 
 //-----------------------------------------------------------------------------
 // return the data pointer for the next node.
-void * ll_next(list_t *list, void **next)
+void * ll_next(list_t *list)
 {
 	void *ptr;
 	
 	assert(list);
-	assert(next);
 
-	if (*next == NULL) {
+	if (list->loop == NULL) {
 		return(NULL);
 	}
 	else {
-		ptr = ((_list_node_t *)*next)->data;
+		ptr = list->loop->data;
 		assert(ptr);
-		*next = ((_list_node_t *)*next)->next;
+		list->loop = list->loop->next;
 		return(ptr);
 	}
+}
+
+//-----------------------------------------------------------------------------
+// This function is used to indicate that the iteration loop is finished.
+// Technically it is not necessary, but it allows us to assist developers in
+// finding obscure bugs in loops.  So if a loop is started, but not finished,
+// and another loop is started, then we generate an assertion.
+void ll_finish(list_t *list)
+{
+	assert(list);
+	list->loop = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -290,11 +307,8 @@ void * ll_next(list_t *list, void **next)
 // hint to where in the list the item is (normally provided as part of
 // ll_start/ll_next).  If next is NULL, then the tail of the list is checked
 // first.
-void ll_remove(list_t *list, void *ptr, void *next)
+void ll_remove(list_t *list, void *ptr)
 {
-	int found;
-	_list_node_t *node;
-
 	assert(list);
 	assert(ptr);
 
@@ -304,39 +318,34 @@ void ll_remove(list_t *list, void *ptr, void *next)
 	// first check the 'next' hint that we were given.   It should be either
 	// pointing to the one we want, or pointing to the next one in the list from
 	// it.
-	found = 0;
-	if (next) {
-		node = next;
+	if (list->loop) {
+		assert(list->loop->data);
+		if (list->loop->data == ptr) {
+			ll_delete_node(list, list->loop);
+			return;
+		}
+		else if (list->loop->prev) {
+			assert(list->loop->prev->data);
+			if (list->loop->prev->data == ptr) {
+				ll_delete_node(list, list->loop->prev);
+				return;
+			}
+		}
+	}
+
+	// we didn't have a hint 'loop' that told us where the entry was, so we need
+	// to go through the list.  We will start at the tail.
+	_list_node_t *node = list->tail;
+	while (node) {
+		assert(node->data);
 		if (node->data == ptr) {
 			ll_delete_node(list, node);
-			found ++;
+			assert(list->items > 0);
+			list->items --;
+			return;
 		}
-		else if (node->prev) {
-			if (node->prev->data == ptr) {
-				ll_delete_node(list, node->prev);
-				found ++;
-			}
-		}
+		node = node->prev;
 	}
-
-	if (found == 0) {
-		node = list->tail;
-		while (node) {
-			if (node->data == ptr) {
-				ll_delete_node(list, node);
-				found++;
-				node = NULL;
-
-				assert(list->items > 0);
-				list->items --;
-			}
-			else {
-				node = node->prev;
-			}
-		}
-	}
-
-	assert(found > 0);
 }
 
 
@@ -346,7 +355,6 @@ int ll_count(list_t *list)
 {
 	assert(list);
 	assert(list->items >= 0);
-
 	return(list->items);
 }
 
@@ -358,7 +366,6 @@ char * ll_join_str(list_t *list, const char *sep)
 {
 	int max;
 	int count;
-	void *next;
 	char *str;
 	
 	assert(list);
@@ -366,11 +373,12 @@ char * ll_join_str(list_t *list, const char *sep)
 	// first go thru the list, and calculate the size of the resulting string.
 	max = 0;
 	count = 0;
-	next = ll_start(list);
-	while ((str = ll_next(list, &next))) {
+	ll_start(list);
+	while ((str = ll_next(list))) {
 		count ++;
 		max += strlen(str);
 	}
+	ll_finish(list);
 
 	if (sep && count > 1) {
 		max += (strlen(sep) * (count-1));
@@ -383,8 +391,8 @@ char * ll_join_str(list_t *list, const char *sep)
 	// now build the list.
 	count = 0;
 	list->join[0] = '\0';
-	next = ll_start(list);
-	while ((str = ll_next(list, &next))) {
+	ll_start(list);
+	while ((str = ll_next(list))) {
 
 		// TODO: strcat is not very optimal way to do this.  We should keep track
 		// of the end of the string and add it direct to the end, but will bother
@@ -397,6 +405,7 @@ char * ll_join_str(list_t *list, const char *sep)
 
 		count++;
 	}
+	ll_finish(list);
 
 	assert(list->join);
 	return(list->join);
