@@ -40,7 +40,7 @@ install: $(LIBFILE) linklist.h
 	nice ldconfig
 	@echo "Install complete."
 
-manpages: man/liblinklist.3 man/ll_free.3 man/ll_get_head.3 man/ll_get_tail.3 man/ll_init.3 man/ll_pop_head.3 man/ll_pop_tail.3 man/ll_push_head.3 man/ll_push_tail.3
+manpages: man/liblinklist.3 man/ll_free.3 man/ll_get_head.3 man/ll_get_tail.3 man/ll_init.3 man/ll_pop_head.3 man/ll_pop_tail.3 man/ll_push_head.3 man/ll_push_tail.3 man/ll_count.3 man/ll_join_str.3 man/ll_move_head.3 man/ll_move_tail.3
 	@mkdir tmp.install 
 	@cp man/* tmp.install/
 	@gzip tmp.install/*.3

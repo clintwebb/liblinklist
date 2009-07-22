@@ -63,6 +63,13 @@ int ll_count(list_t *list);
 // create a string of all the entries in the list, seperated by the 'sep' string.
 char * ll_join_str(list_t *list, const char *sep);
 
-
+// move the entry to the head or tail of a list.  Most likely this would be
+// used while doing looping through the list.  Since the previous functionality
+// of going through the list would have removed the entry and then added it, we
+// will leave the 'next' pointer pointing to the next entry in the list before
+// the move took place.  This means that if you move an entry to the tail of
+// the list, it will likely get processed again if you continue the loop.
+void ll_move_head(list_t *list, void *ptr);
+void ll_move_tail(list_t *list, void *ptr);
 
 #endif

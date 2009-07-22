@@ -1,6 +1,6 @@
 .\" man page for liblinklist
 .\" Contact dev@hyper-active.com.au to correct errors or omissions. 
-.TH liblinklist 3 "16 July 2009" "0.7" "Simple library to manage a free-standing linked list of generic objects."
+.TH liblinklist 3 "22 July 2009" "0.75" "Simple library to manage a free-standing linked list of generic objects."
 .SH NAME
 liblinklist \- Simple library to manage a free-standing linked list of generic objects.
 .SH SYNOPSIS
@@ -34,6 +34,10 @@ liblinklist \- Simple library to manage a free-standing linked list of generic o
 .B int ll_count(list_t *list);
 .br
 .B char * ll_join_str(list_t *list, const char *sep);
+.sp
+.B void ll_move_head(list_t *list, void *ptr);
+.br
+.B void ll_move_tail(list_t *list, void *ptr);
 .sp
 compile with the 
 .B -llinklist
@@ -108,7 +112,9 @@ is a simple library for handling a linked list of objects.  The objects themselv
 .BR ll_finish (3),
 .BR ll_remove (3),
 .BR ll_count (3),
-.BR ll_join_str (3)
+.BR ll_join_str (3),
+.BR ll_move_head (3),
+.BR ll_move_tail (3)
 .SH BUGS
 No known bugs at this time. 
 .SH AUTHOR
@@ -134,3 +140,5 @@ Apr 08, 2009 \- v0.4 - added ll_count() to return the number of items in the lis
 Jun 23, 2009 \- v0.6 - added ll_join_str() function.
 .br
 Jul 16, 2009 \- v0.7 - Reworked the iteration functions (ll_start, ll_next and ll_finish) to use an internal 'next' hint.
+.br
+Jul 22, 2009 \- v0.75 - Added ll_move_head and ll_move_tail so that we can move a node entry without having to remove it from the list and then add it again.
