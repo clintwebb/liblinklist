@@ -1,9 +1,9 @@
 ## make file for liblinklist
 
 MAINFILE=liblinklist.so
-LIBVER=1.0.2
+LIBVER=1.0.3
 LIBFILE=$(MAINFILE).$(LIBVER)
-SONAME=$(MAINFILE).2
+SONAME=$(MAINFILE).3
 
 MANPATH=/usr/local/man
 
@@ -15,7 +15,7 @@ LIBS=
 ARGS=
 REQH=
 
-# Need to be able to make 'man-pages' as well.  Not sure where to get the source for those... 
+
 
 liblinklist.o: linklist.c linklist.h $(REQH)
 	gcc -c -fPIC linklist.c -o $@ $(ARGS)
@@ -41,11 +41,11 @@ install: $(LIBFILE) linklist.h
 	@echo "Install complete."
 
 manpages: man/liblinklist.3 man/ll_free.3 man/ll_get_head.3 man/ll_get_tail.3 man/ll_init.3 man/ll_pop_head.3 man/ll_pop_tail.3 man/ll_push_head.3 man/ll_push_tail.3 man/ll_count.3 man/ll_join_str.3 man/ll_move_head.3 man/ll_move_tail.3
-	@mkdir tmp.install 
+	@mkdir tmp.install
 	@cp man/* tmp.install/
 	@gzip tmp.install/*.3
 	cp tmp.install/*.3.gz $(MANPATH)/man3/
-	@rm -r tmp.install	
+	@rm -r tmp.install
 
 
 clean:
