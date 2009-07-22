@@ -17,8 +17,8 @@
 #define __LINKLIST_H
 
 
-#define LIBLINKLIST_VERSION 0x00007000
-#define LIBLINKLIST_VERSION_TEXT "v0.70"
+#define LIBLINKLIST_VERSION 0x00007500
+#define LIBLINKLIST_VERSION_TEXT "v0.75"
 
 
 typedef struct __llist {
@@ -60,6 +60,9 @@ void ll_finish(list_t *list);
 // statistics of the linked list.
 int ll_count(list_t *list);
 
+// create a string of all the entries in the list, seperated by the 'sep' string.
 char * ll_join_str(list_t *list, const char *sep);
+
+
 
 #endif
