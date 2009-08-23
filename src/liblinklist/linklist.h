@@ -17,8 +17,8 @@
 #define __LINKLIST_H
 
 
-#define LIBLINKLIST_VERSION 0x00008000
-#define LIBLINKLIST_VERSION_TEXT "v0.80"
+#define LIBLINKLIST_VERSION 0x00008100
+#define LIBLINKLIST_VERSION_TEXT "v0.81"
 
 
 typedef struct __llist {

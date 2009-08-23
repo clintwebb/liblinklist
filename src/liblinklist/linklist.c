@@ -19,8 +19,8 @@
 #include <unistd.h>
 
 
-#if (LIBLINKLIST_VERSION != 0x00008000)
-	#error "This version certified for v0.75 only"
+#if (LIBLINKLIST_VERSION != 0x00008100)
+	#error "This version certified for v0.81 only"
 #endif
 
 //-----------------------------------------------------------------------------
@@ -230,17 +230,17 @@ void * ll_pop_head(list_t *list)
 	
 	assert(list);
 
-	data = NULL;
 	if (list->head) {
 		assert(list->head->data);
-		
 		data = list->head->data;
 
+		assert(list->items > 0);
 		ll_delete_node(list, list->head);
 		assert(list->items >= 0);
 	}
 	else {
 		assert(list->items == 0);
+		data = NULL;
 	}
 	
 	return(data);
@@ -254,17 +254,17 @@ void * ll_pop_tail(list_t *list)
 	
 	assert(list);
 
-	data = NULL;
 	if (list->tail) {
 		assert(list->tail->data);
 		data = list->tail->data;
 
+		assert(list->items > 0);
 		ll_delete_node(list, list->tail);
-		list->items --;
 		assert(list->items >= 0);
 	}
 	else {
 		assert(list->items == 0);
+		data = NULL;
 	}
 	
 	return(data);
@@ -348,8 +348,9 @@ void ll_remove(list_t *list, void *ptr)
 	while (node) {
 		assert(node->data);
 		if (node->data == ptr) {
-			ll_delete_node(list, node);
 			assert(list->items > 0);
+			ll_delete_node(list, node);
+			assert(list->items >= 0);
 			return;
 		}
 		node = node->prev;
