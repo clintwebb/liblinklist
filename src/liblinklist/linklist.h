@@ -17,8 +17,8 @@
 #define __LINKLIST_H
 
 
-#define LIBLINKLIST_VERSION 0x00008100
-#define LIBLINKLIST_VERSION_TEXT "v0.81"
+#define LIBLINKLIST_VERSION 0x00009010
+#define LIBLINKLIST_VERSION_TEXT "v0.90.10"
 
 
 typedef struct __llist {
@@ -33,11 +33,12 @@ typedef struct {
 	int items;
 	char *join;
 	_list_node_t *loop;
+	short int internally_created;
 } list_t;
 
 // initializing and de-initializing of the list.
-void ll_init(list_t *list);
-void ll_free(list_t *list);
+list_t * ll_init(list_t *list);
+list_t * ll_free(list_t *list);
 
 // adding data to the list.
 void ll_push_head(list_t *list, void *data);

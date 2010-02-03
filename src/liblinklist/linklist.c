@@ -19,22 +19,33 @@
 #include <unistd.h>
 
 
-#if (LIBLINKLIST_VERSION != 0x00008100)
-	#error "This version certified for v0.81 only"
+#if (LIBLINKLIST_VERSION != 0x00009010)
+	#error "This version certified for v0.90.10 only"
 #endif
 
 //-----------------------------------------------------------------------------
 // Initialise the list structure.  
-void ll_init(list_t *list)
+list_t * ll_init(list_t *list)
 {
-	assert(list);
+	list_t *l;
 	
-	list->head = NULL;
-	list->tail = NULL;
-	list->pool = NULL;
-	list->items = 0;
-	list->join = NULL;
-	list->loop = NULL;
+	if (list) {
+		l = list;
+		l->internally_created = 0;
+	}
+	else {
+		l = malloc(sizeof(list_t));
+		l->internally_created = 1;
+	}
+	
+	l->head = NULL;
+	l->tail = NULL;
+	l->pool = NULL;
+	l->items = 0;
+	l->join = NULL;
+	l->loop = NULL;
+	
+	return(l);
 }
 
 //-----------------------------------------------------------------------------
@@ -42,7 +53,18 @@ void ll_init(list_t *list)
 // any nodes in the list.  Will not free the actual list itself... as it could
 // have been malloc'd, or it could be embedded in another structure, or an
 // auto-var.
-void ll_free(list_t *list)
+//
+// if the list was was created internally, then this function will return a 
+// NULL.  If the list was created externally, and passed in as a parameter to 
+// ll_init() then it will return the pointer.  THis is useful for making sure 
+// that things are free'd the same way they are created.  
+//
+//     somelist = ll_init(NULL);
+//     ...
+//     somelist = ll_free(somelist);
+//     assert(somelist == NULL);
+//
+list_t * ll_free(list_t *list)
 {
 	_list_node_t *node, *tmp;
 	assert(list);
@@ -63,6 +85,14 @@ void ll_free(list_t *list)
 	if (list->join) {
 		free(list->join);
 		list->join = NULL;
+	}
+	
+	if (list->internally_created > 0) {
+		free(list);
+		return(NULL);
+	}
+	else {
+		return(list);
 	}
 }
 
@@ -390,7 +420,7 @@ char * ll_join_str(list_t *list, const char *sep)
 	ll_finish(list);
 
 	if (sep && count > 1) {
-		max += (strlen(sep) * (count-1));
+		max += (strlen(sep) * count);
 	}
 
 	// max now contains the size of the string we will be building.
@@ -415,6 +445,9 @@ char * ll_join_str(list_t *list, const char *sep)
 		count++;
 	}
 	ll_finish(list);
+
+// 	fprintf(stderr, "ll_join_str: len=%d, max=%d\n", strlen(list->join), max);
+	assert(strlen(list->join) <= max);
 
 	assert(list->join);
 	return(list->join);

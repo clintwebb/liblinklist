@@ -7,9 +7,9 @@ liblinklist \- Simple library to manage a free-standing linked list of generic o
 .\" Syntax goes here. 
 .B #include <linklist.h>
 .sp
-.B void ll_init(list_t *list);
+.B list_t * ll_init(list_t *list);
 .br
-.B void ll_free(list_t *list);
+.B list_t * ll_free(list_t *list);
 .sp
 .B void ll_push_head(list_t *list, void *data);
 .br
