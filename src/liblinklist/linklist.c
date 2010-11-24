@@ -34,7 +34,7 @@ list_t * ll_init(list_t *list)
 		l->internally_created = 0;
 	}
 	else {
-		l = malloc(sizeof(list_t));
+		l = malloc(sizeof(*l));
 		l->internally_created = 1;
 	}
 	
@@ -100,7 +100,7 @@ list_t * ll_free(list_t *list)
 // Internal function to return a new node wrapper from the pool.  If there
 // isn't any left in the pool, then create a new node wrapper, and return that
 // instead.
-static _list_node_t * ll_new_node(list_t *list)
+static _list_node_t * new_node(list_t *list)
 {
 	_list_node_t *node;
 
@@ -114,13 +114,13 @@ static _list_node_t * ll_new_node(list_t *list)
 	}
 	else {
 		// There aren't anymore nodes in the pool, so we need to create one.
-		node = (_list_node_t *) malloc(sizeof(_list_node_t));
+		node = calloc(1, sizeof(*node));
 		assert(node);
 		node->data = NULL;
 		node->next = NULL;
 		node->prev = NULL;
 	}
-
+	
 	assert(node);
 	assert(node->data == NULL);
 	assert(node->prev == NULL);
@@ -130,7 +130,7 @@ static _list_node_t * ll_new_node(list_t *list)
 
 //-----------------------------------------------------------------------------
 // Internal function to return a node-wrapper back to the pool.
-static void ll_return_node(list_t *list, _list_node_t *node)
+static void return_node(list_t *list, _list_node_t *node)
 {
 	assert(list);
 	assert(node);
@@ -156,7 +156,7 @@ void ll_push_head(list_t *list, void *data)
 	assert(list);
 	assert(data);
 
-	node = ll_new_node(list);
+	node = new_node(list);
 	node->data = data;
 	assert(node->prev == NULL);
 	node->next = list->head;
@@ -175,7 +175,7 @@ void ll_push_tail(list_t *list, void *data)
 	assert(list);
 	assert(data);
 
-	node = ll_new_node(list);
+	node = new_node(list);
 	node->data = data;
 	assert(node->next == NULL);
 	node->prev = list->tail;
@@ -188,7 +188,7 @@ void ll_push_tail(list_t *list, void *data)
 
 //-----------------------------------------------------------------------------
 // delete a particular node from the list.
-static void ll_delete_node(list_t *list, _list_node_t *node)
+static void delete_node(list_t *list, _list_node_t *node)
 {
 	assert(list);
 	assert(node);
@@ -203,14 +203,22 @@ static void ll_delete_node(list_t *list, _list_node_t *node)
 	list->items --;
 	assert(list->items >= 0);
 
-	if (node->prev) node->prev->next = node->next;
-	if (node->next) node->next->prev = node->prev;
+	if (node->prev) {
+		assert(node->prev->next == node);
+		node->prev->next = node->next;
+	}
+	if (node->next) {
+		assert(node->next->prev == node);
+		node->next->prev = node->prev;
+	}
+	
 	if (list->head == node) list->head = node->next;
 	if (list->tail == node) list->tail = node->prev;
+	
 	node->prev = NULL;
 	node->next = NULL;
 	node->data = NULL;
-	ll_return_node(list, node);
+	return_node(list, node);
 }
 
 
@@ -222,8 +230,6 @@ static void ll_delete_node(list_t *list, _list_node_t *node)
 // before determining to remove it.
 void * ll_get_head(list_t *list)
 {
-	void *data;
-	
 	assert(list);
 
 	if (list->head) {
@@ -256,7 +262,6 @@ void * ll_get_tail(list_t *list)
 void * ll_pop_head(list_t *list)
 {
 	void *data;
-	_list_node_t *node;
 	
 	assert(list);
 
@@ -265,7 +270,7 @@ void * ll_pop_head(list_t *list)
 		data = list->head->data;
 
 		assert(list->items > 0);
-		ll_delete_node(list, list->head);
+		delete_node(list, list->head);
 		assert(list->items >= 0);
 	}
 	else {
@@ -289,7 +294,7 @@ void * ll_pop_tail(list_t *list)
 		data = list->tail->data;
 
 		assert(list->items > 0);
-		ll_delete_node(list, list->tail);
+		delete_node(list, list->tail);
 		assert(list->items >= 0);
 	}
 	else {
@@ -348,25 +353,28 @@ void ll_finish(list_t *list)
 // first.
 void ll_remove(list_t *list, void *ptr)
 {
-	assert(list);
-	assert(ptr);
+	_list_node_t *node;
+	
+	assert(list && ptr);
 
 	assert(list->head);
 	assert(list->tail);
 
-	// first check the 'next' hint that we were given.   It should be either
-	// pointing to the one we want, or pointing to the next one in the list from
-	// it.
+	// first check the 'list->loop' hint.  If it is not NULL, then it should 
+	// be either pointing to the one we want, or pointing to the next one in 
+	// the list from it.
 	if (list->loop) {
 		assert(list->loop->data);
 		if (list->loop->data == ptr) {
-			ll_delete_node(list, list->loop);
+			delete_node(list, list->loop);
 			return;
 		}
 		else if (list->loop->prev) {
+			// the entry we are looking at wasnt the right one.  However, the 
+			// previous one might be, so we will check that too.
 			assert(list->loop->prev->data);
 			if (list->loop->prev->data == ptr) {
-				ll_delete_node(list, list->loop->prev);
+				delete_node(list, list->loop->prev);
 				return;
 			}
 		}
@@ -374,17 +382,25 @@ void ll_remove(list_t *list, void *ptr)
 
 	// we didn't have a hint 'loop' that told us where the entry was, so we need
 	// to go through the list.  We will start at the tail.
-	_list_node_t *node = list->tail;
+	node = list->tail;
 	while (node) {
 		assert(node->data);
 		if (node->data == ptr) {
 			assert(list->items > 0);
-			ll_delete_node(list, node);
+			delete_node(list, node);
 			assert(list->items >= 0);
 			return;
 		}
+		
+		assert(node->prev == NULL || (node->prev->next == node && node->prev != node));
 		node = node->prev;
 	}
+
+	assert(list->items >= 0);
+	assert((list->items == 0 && list->head == NULL && list->tail == NULL) || (list->items > 0 && list->head && list->tail));
+	
+	// if we get this far, then obviously we were asked to remove something that wasn't in the list.
+	assert(0);
 }
 
 

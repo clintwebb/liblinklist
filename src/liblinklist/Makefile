@@ -12,7 +12,7 @@ all: $(LIBFILE)
 
 
 LIBS=
-ARGS=
+ARGS=-g -Wall
 REQH=
 
 
